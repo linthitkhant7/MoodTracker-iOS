@@ -9,9 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("MoodTracker")
-            .font(.largeTitle)
-            .fontWeight(.bold)
+        TabView {
+            MoodCheckInView()
+                .tabItem {
+                    Label("Check-In", systemImage: "square.and.pencil")
+                }
+
+            MoodHistoryView()
+                .tabItem {
+                    Label("History", systemImage: "clock.arrow.circlepath")
+                }
+        }
     }
 }
 
