@@ -98,46 +98,47 @@ struct HistoryView: View {
             Text("All Entries")
                 .font(.headline)
             
-            ForEach(viewModel.entries, id: \.id) { entry in
-                HStack(alignment: .top, spacing: 12) {
-                    Text(entry.moodLevel.emoji)
-                        .font(.system(size: 32))
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(entry.moodLevel.label)
-                                .font(.headline)
-                            Spacer()
-                            Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+            List {
+                ForEach(viewModel.entries, id: \.id) { entry in
+                    HStack(alignment: .top, spacing: 12) {
+                        Text(entry.moodLevel.emoji)
+                            .font(.system(size: 32))
                         
-                        if !entry.emotions.isEmpty {
-                            Text(entry.emotions.joined(separator: " · "))
-                                .font(.caption)
-                                .foregroundStyle(.indigo)
-                        }
-                        
-                        if !entry.note.isEmpty {
-                            Text(entry.note)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(entry.moodLevel.label)
+                                    .font(.headline)
+                                Spacer()
+                                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            if !entry.emotions.isEmpty {
+                                Text(entry.emotions.joined(separator: " · "))
+                                    .font(.caption)
+                                    .foregroundStyle(.indigo)
+                            }
+                            
+                            if !entry.note.isEmpty {
+                                Text(entry.note)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
                         }
                     }
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .swipeActions {
-                    Button(role: .destructive) {
-                        viewModel.deleteEntry(entry)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            viewModel.deleteEntry(entry)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
             }
+            .listStyle(.plain)
+            .frame(minHeight: 300)
         }
     }
 }

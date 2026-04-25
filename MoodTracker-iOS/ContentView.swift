@@ -37,4 +37,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .modelContainer(for: MoodEntry.self, inMemory: true)
-}
+}					
