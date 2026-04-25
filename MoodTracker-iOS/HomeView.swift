@@ -30,6 +30,29 @@ struct HomeView: View {
                     }
                     .padding(.top, 32)
                     
+                    // Health Summary
+                    if viewModel.sleepHours > 0 || viewModel.mindfulMinutes > 0 {
+                        HStack(spacing: 12) {
+                            if viewModel.sleepHours > 0 {
+                                HealthStatCard(
+                                    icon: "moon.fill",
+                                    value: String(format: "%.1f hrs", viewModel.sleepHours),
+                                    label: "Sleep",
+                                    color: .indigo
+                                )
+                            }
+                            if viewModel.mindfulMinutes > 0 {
+                                HealthStatCard(
+                                    icon: "heart.fill",
+                                    value: String(format: "%.0f min", viewModel.mindfulMinutes),
+                                    label: "Mindful",
+                                    color: .pink
+                                )
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
                     // Recent entries or empty state
                     if viewModel.entries.isEmpty {
                         emptyStateView
@@ -103,6 +126,32 @@ struct HomeView: View {
                     .padding(.horizontal)
                 }
             }
+        }
+    }
+    
+    // MARK: - Health Stat Card
+    struct HealthStatCard: View {
+        let icon: String
+        let value: String
+        let label: String
+        let color: Color
+        
+        var body: some View {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .foregroundStyle(color)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(value)
+                        .font(.headline)
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }

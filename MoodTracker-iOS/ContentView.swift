@@ -26,6 +26,9 @@ struct ContentView: View {
                             Label("History", systemImage: "chart.line.uptrend.xyaxis")
                         }
                 }
+                .task {
+                    await viewModel.setupServices()
+                }
             }
         }
         .onAppear {
