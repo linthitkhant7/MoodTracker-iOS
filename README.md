@@ -6,7 +6,7 @@ A native iOS mental health mood tracking app built with Swift and SwiftUI.
 
 | Home | Check-In | History | Settings |
 |------|----------|---------|----------|
-| ![Home](Screenshots/home.png) | ![CheckIn](Screenshots/checkin.png) | ![History](Screenshots/history.png) | ![Settings](Screenshots/settings.png) |
+| <img src="home.png" width="200"> | <img src="checkin.png" width="200"> | <img src="history.png" width="200"> | <img src="settings.png" width="200"> |
 
 ## Overview
 
