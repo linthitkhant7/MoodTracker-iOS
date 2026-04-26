@@ -11,6 +11,55 @@ struct HomeView: View {
     @State private var showCheckIn = false
     var viewModel: MoodViewModel
     
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 0..<12: return "Good Morning 🌅"
+        case 12..<17: return "Good Afternoon ☀️"
+        case 17..<21: return "Good Evening 🌆"
+        default: return "Good Night 🌙"
+        }
+    }
+    
+    private var averageMoodThisWeek: Double {
+        let calendar = Calendar.current
+        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let recentEntries = viewModel.entries.filter { $0.date >= weekAgo }
+        guard !recentEntries.isEmpty else { return 0 }
+        let total = recentEntries.reduce(0) { $0 + $1.moodLevel.rawValue }
+        return Double(total) / Double(recentEntries.count)
+    }
+    
+    private var weeklyMoodSummary: String {
+        let average = averageMoodThisWeek
+        switch average {
+        case 0: return "No entries this week"
+        case ..<2: return "Tough week 💙 Keep going"
+        case ..<3: return "Challenging week 🌱 You're trying"
+        case ..<4: return "Decent week 😊 Stay consistent"
+        case ..<5: return "Good week 🌟 Keep it up"
+        default: return "Amazing week 🚀 You're thriving"
+        }
+    }
+    
+    private var currentStreak: Int {
+        guard !viewModel.entries.isEmpty else { return 0 }
+        let calendar = Calendar.current
+        var streak = 0
+        var currentDate = calendar.startOfDay(for: Date())
+        
+        for entry in viewModel.entries {
+            let entryDate = calendar.startOfDay(for: entry.date)
+            if entryDate == currentDate {
+                streak += 1
+                currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate
+            } else if entryDate < currentDate {
+                break
+            }
+        }
+        return streak
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -21,7 +70,7 @@ struct HomeView: View {
                 VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 8) {
-                        Text("How are you feeling?")
+                        Text(greetingText)
                             .font(.title)
                             .fontWeight(.bold)
                         Text(Date().formatted(date: .long, time: .omitted))
@@ -29,6 +78,26 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(.top, 32)
+                    
+                    // MARK: - Streak Card
+                    if currentStreak > 0 {
+                        HStack(spacing: 12) {
+                            Text("🔥")
+                                .font(.system(size: 32))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(currentStreak) day streak")
+                                    .font(.headline)
+                                Text("Keep logging your mood daily")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal)
+                    }
                     
                     // Health Summary
                     if viewModel.sleepHours > 0 || viewModel.mindfulMinutes > 0 {
@@ -50,6 +119,48 @@ struct HomeView: View {
                                 )
                             }
                         }
+                        .padding(.horizontal)
+                    }
+                    
+                    // MARK: - Weekly Summary Card
+                    if averageMoodThisWeek > 0 {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("This Week")
+                                .font(.headline)
+                            Text(weeklyMoodSummary)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            
+                            // Mood bar
+                            GeometryReader { geometry in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color(.systemGray5))
+                                        .frame(height: 8)
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.indigo)
+                                        .frame(
+                                            width: geometry.size.width * (averageMoodThisWeek / 5),
+                                            height: 8
+                                        )
+                                }
+                            }
+                            .frame(height: 8)
+                            
+                            HStack {
+                                Text("Weekly average")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Text(String(format: "%.1f / 5.0", averageMoodThisWeek))
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.indigo)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                         .padding(.horizontal)
                     }
                     

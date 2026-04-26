@@ -21,6 +21,10 @@ struct CheckInView: View {
         "Confident", "Overwhelmed", "Happy", "Angry"
     ]
     
+    private var canSave: Bool {
+        !selectedEmotions.isEmpty || !note.isEmpty
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -114,16 +118,23 @@ struct CheckInView: View {
                     
                     // MARK: - Save Button
                     Button {
-                        saveEntry()
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            saveEntry()
+                        }
                     } label: {
-                        Text("Save Entry")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.indigo)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                            Text("Save Entry")
+                                .font(.headline)
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(canSave ? Color.indigo : Color.gray)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .animation(.easeInOut, value: canSave)
                     }
+                    .disabled(!canSave)
                 }
                 .padding()
             }
